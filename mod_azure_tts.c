@@ -6,6 +6,7 @@
 #include "mod_azure_tts.h"
 #include "azure_glue.h"
 
+#include <stdlib.h>
 #include <unistd.h>
 
 SWITCH_MODULE_LOAD_FUNCTION(mod_azure_tts_load);
@@ -42,6 +43,8 @@ static switch_status_t speech_open(switch_speech_handle_t *sh, const char *voice
 
     azure->voice_name = switch_core_strdup(sh->memory_pool, voice_name);
     azure->rate = rate;
+    azure->azure_key = getenv("AZURE_SUBSCRIPTION_KEY");
+    azure->azure_region = getenv("AZURE_REGION");
 
     azure->responseHandler = responseHandler;
 
@@ -146,12 +149,6 @@ static void text_param_tts(switch_speech_handle_t *sh, char *param, const char *
 {
     azure_t *azure = (azure_t *) sh->private_info;
     assert(azure != NULL);
-    if(!strcmp(param, "AZURE_SUBSCRIPTION_KEY")) {
-        azure->azure_key = switch_core_strdup(sh->memory_pool, val);
-    }
-    if(!strcmp(param, "AZURE_REGION")) {
-        azure->azure_region = switch_core_strdup(sh->memory_pool, val);
-    }
     if(!strcmp(param, "UUID") && val[0] != '\0') {
         azure->session_uuid_str= switch_core_strdup(sh->memory_pool, val);
     }
