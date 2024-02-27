@@ -43,8 +43,19 @@ static switch_status_t speech_open(switch_speech_handle_t *sh, const char *voice
 
     azure->voice_name = switch_core_strdup(sh->memory_pool, voice_name);
     azure->rate = rate;
+#if 0
     azure->azure_key = getenv("AZURE_SUBSCRIPTION_KEY");
     azure->azure_region = getenv("AZURE_REGION");
+#else
+    azure->azure_key = "YOUR_AZURE_SUBSCRIPTION_KEY";
+    azure->azure_region = "YOUR_AZURE_REGION";
+#endif
+    setenv("SSL_CERT_FILE", "/etc/pki/tls/certs/ca-bundle.crt", 1);
+    setenv("AZURE_INITIAL_SPEECH_TIMEOUT_MS", "2000", 1);
+    setenv("AZURE_END_SPEECH_TIMEOUT_MS", "2000", 1);
+#if 0
+    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "speech_open - getenv (%s) (%s)\n", getenv("SSL_CERT_FILE"), getenv("AZURE_INITIAL_SPEECH_TIMEOUT_MS"));
+#endif
 
     azure->responseHandler = responseHandler;
 
@@ -89,7 +100,9 @@ static switch_status_t speech_feed_tts(switch_speech_handle_t *sh, char *text, s
         return SWITCH_STATUS_FALSE;
     }
 
+#if 0
 	switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "speech_feed_tts\n");
+#endif
 
 	if (SWITCH_STATUS_SUCCESS != azure_speech_feed_tts(sh, text)) {
 		return SWITCH_STATUS_FALSE;
@@ -110,7 +123,9 @@ static void speech_flush_tts(switch_speech_handle_t *sh)
     azure_t *azure = (azure_t *) sh->private_info;
 	assert(azure != NULL);
 
+#if 0
 	switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "speech_flush_tts\n");
+#endif
 
 	if (azure->fh != NULL && azure->fh->file_interface != NULL) {
 		switch_core_file_close(azure->fh);
