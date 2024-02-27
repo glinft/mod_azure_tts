@@ -33,6 +33,9 @@ extern "C" {
             return SWITCH_STATUS_FALSE;
         }
 
+#if 0
+        speechConfig->SetProperty(PropertyId::Speech_LogFilename, "/tmp/azuretts.log");
+#endif
         // The language of the voice that speaks.
         speechConfig->SetSpeechSynthesisVoiceName(azure->voice_name);
         speechConfig->SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat::Riff8Khz16BitMonoPcm); //Riff8Khz16BitMonoPcm(default)  Raw8Khz16BitMonoPcm
@@ -80,6 +83,7 @@ extern "C" {
         else if (result->Reason == ResultReason::Canceled)
         {
             auto cancellation = SpeechSynthesisCancellationDetails::FromResult(result);
+            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, cancellation->ErrorDetails.c_str());
 
             std::map<std::string,std::string> errorResponse;
             errorResponse.insert(std::pair<std::string, std::string>("Reason", std::to_string((int)cancellation->Reason) ) );
